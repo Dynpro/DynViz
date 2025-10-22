@@ -1,0 +1,37 @@
+name: Deploy to AWS CodeDeploy
+
+on:
+  push:
+    branches:
+      - test
+      - dev_ateeqh
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Archive Deployment Package
+        run: zip -r dynviz.zip * .[^.]*
+
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+        run: |
+          aws s3 cp dynviz.zip s3://dynviz-deployments/dynviz.zip
+
+      - name: Deploy with AWS CodeDeploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+        run: |
+          aws deploy create-deployment \
+            --application-name DynViz \
+            --deployment-group-name DynViz-deployment-group \
+            --s3-location bucket=dynviz-deployments,key=dynviz.zip,bundleType=zip
