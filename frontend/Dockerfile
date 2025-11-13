@@ -1,20 +1,23 @@
-# Base image
+# 1. Use official Node.js image
 FROM node:18
 
-# Set working directory
+# 2. Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# 3. Copy only package files (for caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# 4. Install dependencies
+RUN npm install --legacy-peer-deps
 
-# Copy the rest of the app (node_modules excluded by .dockerignore)
+# 5. Copy all project files
 COPY . .
 
-# Expose dev server port
+# 6. Build the Next.js app
+RUN npm run build
+
+# 7. Expose port 3000
 EXPOSE 3000
 
-# Run Next.js in development mode
-CMD ["npm", "run", "dev"]
+# 8. Run the production server
+CMD ["npm", "start"]
