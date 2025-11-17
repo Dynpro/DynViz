@@ -1,20 +1,17 @@
-# Base image
 FROM node:18
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy only package files first (cache optimization)
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the app (node_modules excluded by .dockerignore)
+# Copy everything
 COPY . .
 
-# Expose dev server port
+# Expose Vite dev port
 EXPOSE 4000
 
-# Run Next.js in development mode
-CMD ["npm", "run", "dev"]
+# Start Vite dev server and bind to 0.0.0.0 so EC2 can access it
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "4000"]
