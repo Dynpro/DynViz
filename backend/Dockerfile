@@ -1,44 +1,39 @@
-# ===============================
-# Stage 1: Build the Go backend
-# ===============================
-FROM golang:1.25-alpine AS builder
+# -----------------------------
+# STEP 1 — Build the Go binary
+# -----------------------------
+FROM golang:1.21 AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install git (needed for module fetching) and ca-certificates
-RUN apk add --no-cache git ca-certificates
-
-# Copy go.mod and go.sum to leverage Docker cache
+# Copy go.mod and go.sum for dependency caching
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download
 
-# Copy the full source code
+# Copy the full project
 COPY . .
 
-# Build the Go binary
-RUN go build -o dynviz-backend ./cmd/main.go
+# Build optimized Linux binary
+# CGO disabled for portability
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dynviz-backend ./cmd
 
-# ===============================
-# Stage 2: Create minimal runtime image
-# ===============================
-FROM alpine:latest
+# -----------------------------
+# STEP 2 — Run the minimal container
+# -----------------------------
+FROM alpine:3.19
 
 WORKDIR /app
 
-# Copy the built binary from builder
+# Required for SSL connections (PostgreSQL, Snowflake, HTTPS, etc.)
+RUN apk add --no-cache ca-certificates
+
+# Copy binary from builder stage
 COPY --from=builder /app/dynviz-backend .
 
-# Copy config folder if needed
+# Copy config directory (if your app reads config files)
 COPY --from=builder /app/config ./config
 
-# Expose the port your backend listens on (adjust if different)
+# Expose backend port
 EXPOSE 8080
 
 # Run the backend
 CMD ["./dynviz-backend"]
-
-
-

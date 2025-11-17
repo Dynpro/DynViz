@@ -260,17 +260,17 @@ type CommonMenu struct {
 }
 
 type Dashboard struct {
-	ID             int             `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
-	Name           string          `gorm:"not null" json:"Name,omitempty"`
-	Description    string          `gorm:"default:null" json:"Description,omitempty"`
-	Status         int             `gorm:"default:1" json:"Status,omitempty"`
-	FolderID       int             `gorm:"not null" json:"FolderID,omitempty"`
-	Folder         Folder          `gorm:"foreignKey:FolderID"`
-	Configs        json.RawMessage `gorm:"default:null" json:"Configs,omitempty"`
-	ProjectID      int             `gorm:"not null" json:"ProjectID,omitempty"`
-	Project        Project         `gorm:"foreignKey:ProjectID"`
-	OrganizationID int             `gorm:"not null" json:"OrganizationID,omitempty"`
-	Organization   Organization    `gorm:"foreignKey:OrganizationID"`
+	ID             int          `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
+	Name           string       `gorm:"not null" json:"Name,omitempty"`
+	Description    string       `gorm:"default:null" json:"Description,omitempty"`
+	Status         int          `gorm:"default:1" json:"Status,omitempty"`
+	FolderID       int          `gorm:"not null" json:"FolderID,omitempty"`
+	Folder         Folder       `gorm:"foreignKey:FolderID"`
+	Configs json.RawMessage `gorm:"default:null" json:"Configs,omitempty"`
+	ProjectID      int          `gorm:"not null" json:"ProjectID,omitempty"`
+	Project        Project      `gorm:"foreignKey:ProjectID"`
+	OrganizationID int          `gorm:"not null" json:"OrganizationID,omitempty"`
+	Organization   Organization `gorm:"foreignKey:OrganizationID"`
 	//login Columns
 	CreatedByID      int        `gorm:"not null" json:"CreatedByID,omitempty"`
 	CreatedDate      time.Time  `gorm:"autoCreateTime" json:"CreatedDate,omitempty"`
@@ -810,3 +810,4 @@ func DropTables(db *gorm.DB) error {
 
 	return err
 }
+

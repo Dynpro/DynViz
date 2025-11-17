@@ -13,7 +13,7 @@ func main() {
 	database.InitPostgresDB()
 
 	if database.ResetDB(false) {
-		database.UpdateSequences(false)
+		database.UpdateSequences(true)
 		database.PrefillDB(true)
 	}
 

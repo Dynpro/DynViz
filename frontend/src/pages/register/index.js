@@ -816,26 +816,20 @@ const Register = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth sx={{ mb: 2 }}>
-  <InputLabel id="country-label">Country</InputLabel>
-  <Select
-    labelId="country-label"
-    value={selectedCountry || ""}
-    onChange={handleCountryChange}
-    name="country"
-    required
-  >
-    {countries.length > 0 ? (
-      countries.map((country) => (
-        <MenuItem key={country} value={country}>
-          {country}
-        </MenuItem>
-      ))
-    ) : (
-      <MenuItem value="" disabled>Loading countries...</MenuItem>
-    )}
-  </Select>
-</FormControl>
-
+              <InputLabel>Country</InputLabel>
+              <Select
+                value={selectedCountry}
+                onChange={handleCountryChange}
+                name="country"
+                required
+              >
+                {countries.map((country) => (
+                  <MenuItem key={country} value={country}>
+                    {country}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               fullWidth
               label="Country Code"
@@ -843,7 +837,7 @@ const Register = () => {
               onChange={(e) => setCountryCode(e.target.value)}
               sx={{ mb: 2 }}
               name="countryCode"
-			  required
+              required
             />
             <TextField
               fullWidth

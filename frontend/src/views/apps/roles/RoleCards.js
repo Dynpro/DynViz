@@ -637,8 +637,8 @@ const RolesCards = () => {
   const renderCards = () =>
     roles.map((item, index) => (
       <Grid item xs={12} sm={6} lg={4} key={index}>
-        <Card sx={{
-          height: '100%',
+        <Card sx={{ 
+          height: '100%', 
           transition: 'transform 0.3s, box-shadow 0.3s',
           '&:hover': {
             transform: 'translateY(-5px)',
@@ -658,8 +658,8 @@ const RolesCards = () => {
                   href='/'
                   variant='body2'
                   component={Link}
-                  sx={{
-                    color: 'primary.main',
+                  sx={{ 
+                    color: 'primary.main', 
                     textDecoration: 'none',
                     transition: 'color 0.2s',
                     '&:hover': {
@@ -675,15 +675,15 @@ const RolesCards = () => {
                   Edit Role
                 </Typography>
               </Box>
-              <IconButton
-                sx={{
+              <IconButton 
+                sx={{ 
                   color: 'text.primary',
                   transition: 'all 0.2s',
                   '&:hover': {
                     color: 'error.main',
                     backgroundColor: 'error.light'
                   }
-                }}
+                }} 
                 onClick={() => handleDeleteRole(item.id)}
               >
                 <Icon fontSize={20} icon='bx:trash' />
@@ -699,7 +699,7 @@ const RolesCards = () => {
       {renderCards()}
       <Grid item xs={12} sm={6} lg={4}>
         <Card
-          sx={{
+          sx={{ 
             cursor: 'pointer',
             height: '100%',
             transition: 'transform 0.3s, box-shadow 0.3s',
@@ -819,8 +819,8 @@ const RolesCards = () => {
           }
         }}
       >
-        <DialogTitle
-          sx={{
+        <DialogTitle 
+          sx={{ 
             textAlign: 'center',
             p: theme => theme.spacing(4),
             backgroundColor: theme => theme.palette.background.default,
@@ -830,9 +830,9 @@ const RolesCards = () => {
         >
           {`${dialogTitle} Role`}
         </DialogTitle>
-
+        
         <Divider />
-
+        
         <DialogContent
           sx={{
             pb: theme => `${theme.spacing(2)} !important`,
@@ -856,11 +856,11 @@ const RolesCards = () => {
               />
             </FormControl>
           </Box>
-
+          
           <Box sx={{ mb: 3, mt: 5 }}>
-            <Typography
-              variant='h6'
-              sx={{
+            <Typography 
+              variant='h6' 
+              sx={{ 
                 color: theme => theme.palette.text.primary,
                 fontWeight: 600,
                 position: 'relative',
@@ -878,14 +878,14 @@ const RolesCards = () => {
               Role Permissions
             </Typography>
           </Box>
-
+          
           <Paper elevation={0} variant="outlined" sx={{ mt: 4, borderRadius: 1 }}>
             <TableContainer sx={{ maxHeight: '50vh' }}>
               <Table stickyHeader size='small'>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: theme => theme.palette.background.default }}>
-                    <TableCell
-                      sx={{
+                    <TableCell 
+                      sx={{ 
                         borderRight: theme => `1px solid ${theme.palette.divider}`,
                         backgroundColor: theme => theme.palette.background.default,
                         fontWeight: 'bold'
@@ -893,8 +893,8 @@ const RolesCards = () => {
                     >
                       Module
                     </TableCell>
-                    <TableCell
-                      sx={{
+                    <TableCell 
+                      sx={{ 
                         borderRight: theme => `1px solid ${theme.palette.divider}`,
                         backgroundColor: theme => theme.palette.background.default,
                         fontWeight: 'bold',
@@ -903,8 +903,8 @@ const RolesCards = () => {
                     >
                       Read
                     </TableCell>
-                    <TableCell
-                      sx={{
+                    <TableCell 
+                      sx={{ 
                         borderRight: theme => `1px solid ${theme.palette.divider}`,
                         backgroundColor: theme => theme.palette.background.default,
                         fontWeight: 'bold',
@@ -913,8 +913,8 @@ const RolesCards = () => {
                     >
                       Write
                     </TableCell>
-                    <TableCell
-                      sx={{
+                    <TableCell 
+                      sx={{ 
                         backgroundColor: theme => theme.palette.background.default,
                         fontWeight: 'bold',
                         textAlign: 'center'
@@ -925,80 +925,74 @@ const RolesCards = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(menus) && menus.length > 0 ? (
-                    menus.map((menu, index) => (
-                      <TableRow key={index} sx={{
-                        '&:nth-of-type(odd)': {
+                  {menus.map((menu, index) => (
+                    <TableRow 
+                      key={index} 
+                      sx={{ 
+                        '&:nth-of-type(odd)': { 
                           backgroundColor: theme => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'
                         },
                         '&:hover': {
                           backgroundColor: theme => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)'
                         }
-                       }}
-                        >
-                        <TableCell sx={{ borderRight: theme => `1px solid ${theme.palette.divider}` }}>
-                          {menu.Name}
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            borderRight: theme => `1px solid ${theme.palette.divider}`,
-                            textAlign: 'center'
-                          }}
-                        >
-                          <Checkbox
-                            value={`${menu.ID}-read`}
-                            onChange={() => togglePermission(`${menu.ID}-read`)}
-                            checked={selectedCheckbox.includes(`${menu.ID}-read`)}
-                            color="primary"
-                          />
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            borderRight: theme => `1px solid ${theme.palette.divider}`,
-                            textAlign: 'center'
-                          }}
-                        >
-                          <Checkbox
-                            value={`${menu.ID}-write`}
-                            onChange={() => togglePermission(`${menu.ID}-write`)}
-                            checked={selectedCheckbox.includes(`${menu.ID}-write`)}
-                            color="primary"
-                          />
-                        </TableCell>
-                        <TableCell sx={{ textAlign: 'center' }}>
-                          <Checkbox
-                            value={`${menu.ID}-view`}
-                            onChange={() => togglePermission(`${menu.ID}-view`)}
-                            checked={selectedCheckbox.includes(`${menu.ID}-view`)}
-                            color="primary"
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} align="center" sx={{ py: 6, color: theme => theme.palette.text.secondary }}>
-                        No menus available
+                      }}
+                    >
+                      <TableCell sx={{ borderRight: theme => `1px solid ${theme.palette.divider}` }}>
+                        {menu.Name}
+                      </TableCell>
+                      <TableCell 
+                        sx={{ 
+                          borderRight: theme => `1px solid ${theme.palette.divider}`,
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Checkbox
+                          value={`${menu.ID}-read`}
+                          onChange={() => togglePermission(`${menu.ID}-read`)}
+                          checked={selectedCheckbox.includes(`${menu.ID}-read`)}
+                          color="primary"
+                        />
+                      </TableCell>
+                      <TableCell 
+                        sx={{ 
+                          borderRight: theme => `1px solid ${theme.palette.divider}`,
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Checkbox
+                          value={`${menu.ID}-write`}
+                          onChange={() => togglePermission(`${menu.ID}-write`)}
+                          checked={selectedCheckbox.includes(`${menu.ID}-write`)}
+                          color="primary"
+                        />
+                      </TableCell>
+                      <TableCell sx={{ textAlign: 'center' }}>
+                        <Checkbox
+                          value={`${menu.ID}-view`}
+                          onChange={() => togglePermission(`${menu.ID}-view`)}
+                          checked={selectedCheckbox.includes(`${menu.ID}-view`)}
+                          color="primary"
+                        />
                       </TableCell>
                     </TableRow>
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
           </Paper>
         </DialogContent>
-
+        
         <Divider />
-
+        
         <DialogActions
           sx={{
             justifyContent: 'center',
             p: theme => `${theme.spacing(4)} !important`
           }}
         >
-          <Button
-            variant='contained'
-            sx={{
+          <Button 
+            variant='contained' 
+            sx={{ 
               mr: 2,
               px: 4,
               py: 1,
@@ -1009,16 +1003,16 @@ const RolesCards = () => {
                 transform: 'translateY(-2px)',
                 boxShadow: 4
               }
-            }}
+            }} 
             onClick={handleSubmit}
           >
             Submit
           </Button>
-          <Button
-            variant='outlined'
-            color='secondary'
+          <Button 
+            variant='outlined' 
+            color='secondary' 
             onClick={handleClose}
-            sx={{
+            sx={{ 
               px: 4,
               py: 1,
               borderRadius: 1,

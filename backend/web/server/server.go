@@ -196,14 +196,15 @@ func StartServer() {
 	}
 	r.PathPrefix("/EmbedAPI").Handler(http.StripPrefix("/EmbedAPI", EmbedAPI))
 
-	// Cell module
-	Cell, err := router.InitCellRouter()
-	if err != nil {
-		fmt.Println("Error initializing Cell router:", err)
-		return
-	}
-	r.PathPrefix("/Cell").Handler(http.StripPrefix("/Cell", Cell))
 
+		// Cell module
+		Cell, err := router.InitCellRouter()
+		if err != nil {
+			fmt.Println("Error initializing Cell router:", err)
+			return
+		}
+		r.PathPrefix("/Cell").Handler(http.StripPrefix("/Cell", Cell))
+	
 	// datablock module
 	DataBlockRouter, err := router.InitDataBlockRouter()
 	if err != nil {
@@ -242,22 +243,16 @@ func StartServer() {
 	}
 	r.PathPrefix("/filter").Handler(http.StripPrefix("/filter", FilterRouter))
 
+	
+
 	// submit mux router to http
 	http.Handle("/", r)
 
 	// Enable CORS middleware
-	// For development: use "*" for all origins
-	// For production: specify exact origins
-	allowedOrigins := []string{
-		"http://localhost:4000",           // Local development
-		"http://35.174.177.127:4000",      // EC2 frontend
-		"http://35.174.177.127:3000",      // EC2 frontend (alternative port)
-	}
-	
 	cors := handlers.CORS(
-		handlers.AllowedOrigins(allowedOrigins),
+		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "X-Requested-With"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
 	)
 
 	handler := cors(r)
