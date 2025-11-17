@@ -1,7 +1,7 @@
 # -----------------------------
 # STEP 1 — Build the Go binary
 # -----------------------------
-FROM golang:1.21 AS builder
+FROM golang:1.25 AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,6 @@ RUN go mod download
 COPY . .
 
 # Build optimized Linux binary
-# CGO disabled for portability
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dynviz-backend ./cmd
 
 # -----------------------------
@@ -23,17 +22,15 @@ FROM alpine:3.19
 
 WORKDIR /app
 
-# Required for SSL connections (PostgreSQL, Snowflake, HTTPS, etc.)
+# Required for SSL connections (PostgreSQL, HTTPS, etc.)
 RUN apk add --no-cache ca-certificates
 
 # Copy binary from builder stage
 COPY --from=builder /app/dynviz-backend .
 
-# Copy config directory (if your app reads config files)
+# Copy config folder (if needed)
 COPY --from=builder /app/config ./config
 
-# Expose backend port
 EXPOSE 8080
 
-# Run the backend
 CMD ["./dynviz-backend"]
