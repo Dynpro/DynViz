@@ -1,9 +1,12 @@
 name: Deploy DynViz to EC2
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    paths:
+      - 'deploy.sh'
+      - 'docker-compose.yml'    # trigger if compose changed
+      - '.github/workflows/ec2-deploy.yml'
 
 jobs:
   deploy:
@@ -17,15 +20,13 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
+          username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
-            cd /home/ubuntu/DynViz
-            echo "🛑 Stopping old containers..."
-            docker compose down || true
-            echo "📦 Pulling latest Docker images..."
-            docker pull dynprobangalore/dynviz-v1:frontend
-            docker pull dynprobangalore/dynviz-v1:backend
-            echo "🚀 Starting updated containers..."
-            docker compose up -d --build
-            echo "✅ Deployment complete!"
+            export DOCKERHUB_USERNAME="${{ secrets.DOCKER_USERNAME }}"
+            export DOCKERHUB_TOKEN="${{ secrets.DOCKER_PASSWORD }}"
+            cd /home/ubuntu
+            chmod +x ./deploy.sh || true
+            ./deploy.sh
