@@ -1,16 +1,7 @@
 #!/bin/bash
-set -e
-
-echo "🧹 Stopping and removing old containers..."
+cd ~/DynViz
 sudo docker-compose down || true
+sudo docker pull dynprobangalore/dynviz-v1:frontend
+sudo docker pull dynprobangalore/dynviz-v1:backend
+sudo docker-compose up -d --build
 
-echo "🔑 Logging into Docker Hub..."
-echo "$DOCKER_TOKEN" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
-
-echo "🛠 Pulling latest images from Docker Hub..."
-sudo docker-compose pull
-
-echo "🚀 Starting new containers..."
-sudo docker-compose up -d
-
-echo "✅ Deployment complete!"
