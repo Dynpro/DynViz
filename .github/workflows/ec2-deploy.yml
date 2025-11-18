@@ -3,7 +3,8 @@ name: Deploy to EC2
 on:
   workflow_run:
     workflows: ["Build and Push Docker Images"]
-    types: [completed]
+    types:
+      - completed
 
 jobs:
   deploy:
@@ -17,17 +18,17 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Stop old containers (ignore if not running)
+            # Stop and remove old containers (ignore errors)
             docker stop dynviz-backend dynviz-frontend || true
             docker rm dynviz-backend dynviz-frontend || true
 
-            # Login to DockerHub
+            # Login to Docker Hub
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-            # Pull latest images
-            docker pull dynprobangalore/dynviz-v1:backend
-            docker pull dynprobangalore/dynviz-v1:frontend
+            # Pull the newly tagged images
+            docker pull dynprobangalore/dynviz-v1:backend-${{ github.event.workflow_run.head_commit.id }}
+            docker pull dynprobangalore/dynviz-v1:frontend-${{ github.event.workflow_run.head_commit.id }}
 
-            # Start containers
-            docker run -d --name dynviz-backend -p 8080:8080 dynprobangalore/dynviz-v1:backend
-            docker run -d --name dynviz-frontend -p 3000:3000 dynprobangalore/dynviz-v1:frontend
+            # Run new containers
+            docker run -d --name dynviz-backend -p 8080:8080 dynprobangalore/dynviz-v1:backend-${{ github.event.workflow_run.head_commit.id }}
+            docker run -d --name dynviz-frontend -p 3000:3000 dynprobangalore/dynviz-v1:frontend-${{ github.event.workflow_run.head_commit.id }}
