@@ -15,3 +15,5 @@ EXPOSE 4000
 
 # Start Vite dev server and bind to 0.0.0.0 so EC2 can access it
 CMD ["npm", "start", "--", "--host", "0.0.0.0", "--port", "4000"]
+
+
