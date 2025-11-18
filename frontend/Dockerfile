@@ -1,26 +1,20 @@
-# ----------------------
-# Build Stage
-# ----------------------
-FROM node:18 AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-# ----------------------
-# Production Stage
-# ----------------------
 FROM node:18
 
 WORKDIR /app
 
-COPY --from=builder /app ./
+# Copy package files
+COPY package*.json ./
 
-EXPOSE 4000
+RUN npm install
 
-CMD ["npm", "start", "-p", "4000"]
+# Copy all source code
+COPY . .
 
+# Build Next.js app
+RUN npm run build
+
+# Expose production port
+EXPOSE 3000
+
+# Start Next.js production server
+CMD ["npm", "start"]
