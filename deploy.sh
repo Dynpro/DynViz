@@ -1,14 +1,17 @@
-Currently i have this in my deploy.sh file
 #!/bin/bash
 set -e
 
-echo "🛠 Pulling latest images from Docker Hub..."
-docker-compose pull
+echo "[INFO] Logging in to Docker Hub..."
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-echo "🚀 Restarting containers..."
-docker-compose up -d
+echo "[INFO] Pulling latest images..."
+docker compose pull
 
-echo "🧹 Cleaning old images..."
+echo "[INFO] Restarting containers..."
+docker compose up -d
+
+echo "[INFO] Cleaning unused images..."
 docker image prune -f
 
-echo "✅ Deployment complete!"
+echo "[INFO] Deployment complete."
+docker ps
