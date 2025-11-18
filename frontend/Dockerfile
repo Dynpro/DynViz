@@ -1,6 +1,5 @@
 FROM node:18
 
-
 WORKDIR /app
 
 # Copy package files
