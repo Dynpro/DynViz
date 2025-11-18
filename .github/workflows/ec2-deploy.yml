@@ -3,26 +3,26 @@ name: Deploy to EC2
 on:
   workflow_run:
     workflows: ["Build and Push Docker Images"]
-    types:
-      - completed
+    types: [completed]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: SSH to EC2 and deploy
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
+
+          # Pass Docker Hub secrets to EC2
+          envs: DOCKER_USERNAME, DOCKER_PASSWORD
+
           script: |
             cd ~/DynViz
-            sudo docker-compose down || true
-            sudo docker pull dynprobangalore/dynviz-v1:frontend
-            sudo docker pull dynprobangalore/dynviz-v1:backend
-            sudo docker-compose up -d --build
+            chmod +x deploy.sh
+            DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
+            DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
+            ./deploy.sh
