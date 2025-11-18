@@ -1,25 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "[INFO] Starting deployment..."
+echo "📦 DynViz Deployment Started"
 
-# Validate required environment variables
-if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
-    echo "[ERROR] Missing Docker Hub credentials (DOCKERHUB_USERNAME or DOCKERHUB_TOKEN)."
-    exit 1
-fi
+# Login to Docker Hub
+echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
 
-echo "[INFO] Stopping existing containers..."
+# Stop old containers
 sudo docker-compose down || true
 
-echo "[INFO] Logging in to Docker Hub..."
-echo "$DOCKERHUB_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-
-echo "[INFO] Pulling latest images..."
+# Pull latest images
 sudo docker-compose pull
 
-echo "[INFO] Starting containers..."
+# Start updated containers
 sudo docker-compose up -d
 
-echo "[INFO] Deployment successful."
+echo "✅ Deployment complete!"
 sudo docker ps
