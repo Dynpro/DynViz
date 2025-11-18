@@ -1,16 +1,25 @@
 #!/bin/bash
 set -e
 
-echo "🧹 Stopping and removing old containers..."
+echo "[INFO] Starting deployment..."
+
+# Validate required environment variables
+if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
+    echo "[ERROR] Missing Docker Hub credentials (DOCKERHUB_USERNAME or DOCKERHUB_TOKEN)."
+    exit 1
+fi
+
+echo "[INFO] Stopping existing containers..."
 sudo docker-compose down || true
 
-echo "🔑 Logging into Docker Hub..."
+echo "[INFO] Logging in to Docker Hub..."
 echo "$DOCKERHUB_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
-echo "🛠 Pulling latest images from Docker Hub..."
+echo "[INFO] Pulling latest images..."
 sudo docker-compose pull
 
-echo "🚀 Starting new containers..."
+echo "[INFO] Starting containers..."
 sudo docker-compose up -d
 
-echo "✅ Deployment complete!"
+echo "[INFO] Deployment successful."
+sudo docker ps
