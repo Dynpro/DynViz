@@ -32,3 +32,4 @@ jobs:
             # Run new containers
             docker run -d --name dynviz-backend -p 8080:8080 dynprobangalore/dynviz-v1:backend-${{ github.event.workflow_run.head_commit.id }}
             docker run -d --name dynviz-frontend -p 3000:3000 dynprobangalore/dynviz-v1:frontend-${{ github.event.workflow_run.head_commit.id }}
+            
