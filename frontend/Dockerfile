@@ -1,19 +1,26 @@
+# ----------------------
+# Build Stage
+# ----------------------
+FROM node:18 AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# ----------------------
+# Production Stage
+# ----------------------
 FROM node:18
 
 WORKDIR /app
 
-# Copy only package files first (cache optimization)
-COPY package*.json ./
+COPY --from=builder /app ./
 
-RUN npm install
-
-# Copy everything
-COPY . .
-
-# Expose Vite dev port
 EXPOSE 4000
 
-# Start Vite dev server and bind to 0.0.0.0 so EC2 can access it
-CMD ["npm", "start", "--", "--host", "0.0.0.0", "--port", "4000"]
-
+CMD ["npm", "start", "-p", "4000"]
 
