@@ -11,19 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Step 1: Checkout your repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: SSH to EC2 and deploy
+      # Step 2: SSH to EC2 and deploy
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}          # Your EC2 public IP or DNS
+          username: ubuntu                        # EC2 username
+          key: ${{ secrets.EC2_PRIVATE_KEY }}     # Private key stored in GitHub Secrets
+          port: 22
           script: |
+            set -e  # Stop on any error
+
+            echo "===================="
+            echo "Starting EC2 Deployment"
+            echo "===================="
+
+            # Navigate to your project folder
             cd ~/DynViz
+
+            echo "Stopping existing containers (if any)..."
             sudo docker-compose down || true
+
+            echo "Pulling latest Docker images..."
             sudo docker pull dynprobangalore/dynviz-v1:frontend
             sudo docker pull dynprobangalore/dynviz-v1:backend
+
+            echo "Starting containers with docker-compose..."
             sudo docker-compose up -d --build
 
+            echo "===================="
+            echo "Deployment completed successfully!"
+            echo "===================="
