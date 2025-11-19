@@ -11,25 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2 via SSH
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Stop and remove old containers (ignore errors)
-            docker stop dynviz-backend dynviz-frontend || true
-            docker rm dynviz-backend dynviz-frontend || true
+            cd ~/DynViz
+            sudo docker-compose down || true
+            sudo docker pull dynprobangalore/dynviz-v1:frontend
+            sudo docker pull dynprobangalore/dynviz-v1:backend
+            sudo docker-compose up -d --build
 
-            # Login to Docker Hub
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-            # Pull the newly tagged images
-            docker pull dynprobangalore/dynviz-v1:backend-${{ github.event.workflow_run.head_commit.id }}
-            docker pull dynprobangalore/dynviz-v1:frontend-${{ github.event.workflow_run.head_commit.id }}
-
-            # Run new containers
-            docker run -d --name dynviz-backend -p 8080:8080 dynprobangalore/dynviz-v1:backend-${{ github.event.workflow_run.head_commit.id }}
-            docker run -d --name dynviz-frontend -p 3000:3000 dynprobangalore/dynviz-v1:frontend-${{ github.event.workflow_run.head_commit.id }}
-            
