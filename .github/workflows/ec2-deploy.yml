@@ -15,7 +15,7 @@ jobs:
 
       - name: Extract commit SHA
         id: vars
-        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+        run: echo "SHA=${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -26,22 +26,22 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build & Push BACKEND
-      - name: Build backend image with SHA
+      # Build & push backend
+      - name: Build backend image
         run: |
-          docker build -t dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.sha }} -f backend/Dockerfile backend
-          docker push dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.sha }}
+          docker build -t dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.SHA }} -f backend/Dockerfile backend
+          docker push dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.SHA }}
 
-      # Build & Push FRONTEND
-      - name: Build frontend image with SHA
+      # Build & push frontend
+      - name: Build frontend image
         run: |
-          docker build -t dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.sha }} -f frontend/Dockerfile frontend
-          docker push dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.sha }}
+          docker build -t dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.SHA }} -f frontend/Dockerfile frontend
+          docker push dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.SHA }}
 
-      # Optionally push "latest"
+      # Push latest tag (optional)
       - name: Push latest tags
         run: |
-          docker tag dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.sha }} dynprobangalore/dynviz-v1:backend
-          docker tag dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.sha }} dynprobangalore/dynviz-v1:frontend
+          docker tag dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.SHA }} dynprobangalore/dynviz-v1:backend
+          docker tag dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.SHA }} dynprobangalore/dynviz-v1:frontend
           docker push dynprobangalore/dynviz-v1:backend
           docker push dynprobangalore/dynviz-v1:frontend
