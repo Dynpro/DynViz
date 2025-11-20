@@ -1,59 +1,47 @@
-name: Deploy to EC2
+name: Build and Push Docker Images
 
 on:
-  workflow_run:
-    workflows: ["Build and Push Docker Images"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Extract the commit SHA from the triggered workflow
-      - name: Get commit SHA from build workflow
-        id: sha
-        run: echo "sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+      - name: Extract commit SHA
+        id: vars
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            set -e
-            echo "====== Starting EC2 Deployment ======"
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-            SHA=${{ steps.sha.outputs.sha }}
-            echo "Using SHA: $SHA"
+      # Build & Push BACKEND
+      - name: Build backend image with SHA
+        run: |
+          docker build -t dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.sha }} -f backend/Dockerfile backend
+          docker push dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.sha }}
 
-            cd ~/DynViz
+      # Build & Push FRONTEND
+      - name: Build frontend image with SHA
+        run: |
+          docker build -t dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.sha }} -f frontend/Dockerfile frontend
+          docker push dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.sha }}
 
-            echo "Stopping running containers..."
-            sudo docker compose down || true
-
-            echo "Logging in to Docker Hub..."
-            echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-            echo "Pulling SHA-tagged images..."
-            sudo docker pull dynprobangalore/dynviz-v1:backend-$SHA
-            sudo docker pull dynprobangalore/dynviz-v1:frontend-$SHA
-
-            echo "Rewriting docker-compose.yml with latest SHA..."
-            sudo sed -i "s|dynprobangalore/dynviz-v1:backend.*|dynprobangalore/dynviz-v1:backend-$SHA|g" docker-compose.yml
-            sudo sed -i "s|dynprobangalore/dynviz-v1:frontend.*|dynprobangalore/dynviz-v1:frontend-$SHA|g" docker-compose.yml
-
-            echo "Starting updated containers..."
-            sudo docker compose up -d --remove-orphans
-
-            echo "====== Deployment Complete Successfully ======"
-
-            sudo docker-compose up -d --remove-orphans
-
-            echo "Deployment complete!"
+      # Optionally push "latest"
+      - name: Push latest tags
+        run: |
+          docker tag dynprobangalore/dynviz-v1:backend-${{ steps.vars.outputs.sha }} dynprobangalore/dynviz-v1:backend
+          docker tag dynprobangalore/dynviz-v1:frontend-${{ steps.vars.outputs.sha }} dynprobangalore/dynviz-v1:frontend
+          docker push dynprobangalore/dynviz-v1:backend
+          docker push dynprobangalore/dynviz-v1:frontend
