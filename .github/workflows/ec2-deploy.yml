@@ -34,3 +34,5 @@ jobs:
 
             echo "Deployment complete!"
             docker ps
+
+            
